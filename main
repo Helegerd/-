@@ -1,0 +1,73 @@
+class Drob:
+    '''дробь'''
+    def __init__(self, tsel=0, chisl=0, znam=1, flag=1):
+        self.chisl = chisl
+        self.znam = znam
+        self.tsel = tsel
+    
+    def makeEasy(self):
+        '''сокращение'''
+        if self.chisl == 0:
+            return
+        while True:
+            nod = evclid(self.chisl, self.znam)
+            if nod == 1:
+                break
+            self.chisl = self.chisl // nod
+            self.znam = self.znam // nod
+            
+    def __add__(self, other):
+        znam = self.znam * other.znam
+        chisl = other.znam * (self.tsel * self.znam + self.chisl * getFlag(self.tsel)) +\
+            self.znam * (other.tsel * other.znam + other.chisl * getFlag(other.tsel))
+        tsel = chisl // znam
+        chisl = abs(chisl) % znam
+        res = Drob(tsel=tsel, chisl=chisl, znam=znam)
+        res.makeEasy()
+        return res
+    
+    def __sub__(self, other):
+        res = self + Drob(tsel=-1 * other.tsel, chisl=other.chisl, znam=other.znam)
+        res.makeEasy()
+        return res
+    
+    def __mul__(self, other):
+        chisl = (self.tsel * self.znam + self.chisl * getFlag(self.tsel)) *\
+            (other.tsel * other.znam + other.chisl * getFlag(other.tsel))
+        znam = self.znam * other.znam
+        tsel = chisl // znam
+        chisl = abs(chisl) % znam
+        res = Drob(tsel=tsel, chisl=chisl, znam=znam)
+        res.makeEasy()
+        return res
+    
+    def __div__(self, other):
+        res = self * Drob(tsel=0, chisl=other.znam, znam=other.tsel * other.znam + other.chisl * getFlag(other.tsel))
+        res.makeEasy()
+        return res
+    
+    def __str__(self):
+        return f'{self.tsel} {self.chisl}/{self.znam}'
+        
+        
+def evclid(a, b):
+    '''НОД а и б'''
+    while a != 0 and b != 0:
+        if a > b:
+            a -= b
+        else:
+            b -= a
+    return a + b
+
+def getFlag(n):
+    '''число неотр. (1) или нет (-1)'''
+    if n >= 0:
+        return 1
+    return -1
+
+a = Drob(0, 1, 2)
+b = Drob(0, 3, 9)
+b.makeEasy()
+print(a - b)
+#with open('FGHJ.txt') as f:
+#    matrix = [list(map(int, line)) for line in f.read.split('\n')]
